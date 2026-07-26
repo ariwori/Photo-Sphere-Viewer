@@ -176,6 +176,13 @@ This library is available under the MIT license.
                 </a>
             </td>
             <td align="center">
+                <a href="https://github.com/PabloAraya6">
+                    <img src="https://avatars.githubusercontent.com/u/47538879?v=4" width="100;" alt="PabloAraya6"/>
+                    <br />
+                    <sub><b>Pablo Araya</b></sub>
+                </a>
+            </td>
+            <td align="center">
                 <a href="https://github.com/pmarfany">
                     <img src="https://avatars.githubusercontent.com/u/26713382?v=4" width="100;" alt="pmarfany"/>
                     <br />
@@ -189,6 +196,8 @@ This library is available under the MIT license.
                     <sub><b>Pierre Hourdille</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/gausie">
                     <img src="https://avatars.githubusercontent.com/u/179758?v=4" width="100;" alt="gausie"/>
@@ -196,8 +205,6 @@ This library is available under the MIT license.
                     <sub><b>Samuel Gaus</b></sub>
                 </a>
             </td>
-		</tr>
-		<tr>
             <td align="center">
                 <a href="https://github.com/stephanmullerNL">
                     <img src="https://avatars.githubusercontent.com/u/1608051?v=4" width="100;" alt="stephanmullerNL"/>
@@ -233,11 +240,20 @@ This library is available under the MIT license.
                     <sub><b>王嘉欣</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/antvil">
                     <img src="https://avatars.githubusercontent.com/u/56440776?v=4" width="100;" alt="antvil"/>
                     <br />
                     <sub><b>antvil</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/pabloaraya6">
+                    <img src="https://avatars.githubusercontent.com/u/47538879?v=4" width="100;" alt="pabloaraya6"/>
+                    <br />
+                    <sub><b>Pablo Araya</b></sub>
                 </a>
             </td>
 		</tr>
