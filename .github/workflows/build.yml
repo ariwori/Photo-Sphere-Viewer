@@ -81,47 +81,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v7
-
-      - name: setup
-        uses: ./.github/workflows/shared/setup
+      - name: start e2e workflow
+        uses: benc-uk/workflow-dispatch@v1
         with:
-          turbo-cache: 'false'
-
-      - name: e2e
-        run: yarn ci:e2e
-
-      - name: test summary
-        uses: phoenix-actions/test-reporting@v16
-        if: ${{ !cancelled() }}
-        with:
-          name: e2e
-          output-to: step-summary
-          path: 'cypress/reports/html/.jsons/*.json'
-          reporter: mochawesome-json
-
-      - name: coverage summary
-        if: ${{ !cancelled() }}
-        run: node ./build/generate-coverage-summary.mjs >> $GITHUB_STEP_SUMMARY
-
-      - name: report artifact
-        uses: actions/upload-artifact@v7
-        if: ${{ !cancelled() }}
-        with:
-          name: e2e-report-${{ env.REF_NAME_SLUG }}-${{ env.SHORT_SHA }}
-          path: |
-            cypress/reports/html
-            !cypress/reports/html/.jsons
-
-      - name: deploy report
-        uses: ./.github/workflows/shared/deploy-netlify
-        if: ${{ !cancelled() && github.repository == 'mistic100/Photo-Sphere-Viewer' && github.ref_name == 'main' }}
-        with:
-          env: cypress
-          root-folder: cypress/reports/html
-          excludes: .jsons
-          auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          site-id: ${{ secrets.NETLIFY_REPORTS_SITE_ID }}
+          workflow: e2e
 
   docs:
     needs: [changes, build]
