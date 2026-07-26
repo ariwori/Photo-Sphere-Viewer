@@ -2,6 +2,7 @@
 
 [![NPM version](https://img.shields.io/npm/v/@photo-sphere-viewer/core?logo=npm)](https://www.npmjs.com/package/@photo-sphere-viewer/core)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/mistic100/Photo-Sphere-Viewer/build.yml?branch=main&logo=github)](https://github.com/mistic100/Photo-Sphere-Viewer/actions/workflows/build.yml)
+[![E2E Status](https://img.shields.io/github/actions/workflow/status/mistic100/Photo-Sphere-Viewer/e2e.yml?branch=main&logo=cypress&label=e2e)](https://psv-cypress-reports.netlify.app/)
 [![Netlify Status](https://img.shields.io/netlify/472fe613-7694-4e61-a662-07e3b988afb3?logo=netlify)](https://photo-sphere-viewer.js.org)
 
 A JavaScript library to display 360° panoramas.
