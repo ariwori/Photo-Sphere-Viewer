@@ -5,6 +5,9 @@ on:
   release:
     types: [published]
 
+env:
+  RELEASE_LINK: "[version ${{ github.ref_name }}](https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }})"
+
 jobs:
   close:
     if: ${{ github.repository == 'mistic100/Photo-Sphere-Viewer' }}
@@ -12,17 +15,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - id: close
-        uses: Akkjon/close-milestone@v2
-        with:
-          milestone_name: ${{ github.ref_name }}
-          crash_on_missing: false
+      - name: Get milestone
+        id: milestone
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          milestone_number="$(gh api \
+            "/repos/${{ github.repository }}/milestones" \
+            --jq '.[] | select(.title == "${{ github.ref_name }}") | .number' \
+            | head -n 1)"
+          if [ -n "$milestone_number" ]; then
+            echo "milestone-number=$milestone_number" >> "$GITHUB_OUTPUT"
+          fi
 
-      - if: steps.close.outputs.milestone_id
+      - if: steps.milestone.outputs.milestone-number
         uses: bflad/action-milestone-comment@v2
         with:
-          milestone: ${{ steps.close.outputs.milestone_id }}
+          milestone: ${{ steps.milestone.outputs.milestone-number }}
           body: |
-            This feature/bug fix has been released in [version ${{ github.ref_name }}](https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}).
+            This feature/bug fix has been released in ${{ env.RELEASE_LINK }}.
+
+      - if: steps.milestone.outputs.milestone-number
+        name: Close milestone
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api \
+            --method PATCH \
+            /repos/${{ github.repository }}/milestones/${{ steps.milestone.outputs.milestone-number }} \
+            -f description="Released in ${{ env.RELEASE_LINK }}" \
+            -f state="closed"
