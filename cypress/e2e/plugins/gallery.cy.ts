@@ -20,9 +20,8 @@ describe('plugin: gallery', () => {
     });
 
     it('should have a gallery', () => {
-        cy.get('.psv-gallery')
-            .should('be.visible')
-            .compareScreenshots('base');
+        cy.get('.psv-gallery').should('be.visible');
+        screenshotGallery('base');
     });
 
     it('should hide gallery on panel open', () => {
@@ -40,7 +39,7 @@ describe('plugin: gallery', () => {
 
         waitForAllThumbnails();
 
-        cy.get('.psv-gallery').compareScreenshots('scroll-pan');
+        screenshotGallery('scroll-pan');
     });
 
     it('should click and drag', () => {
@@ -51,7 +50,7 @@ describe('plugin: gallery', () => {
 
         waitForAllThumbnails();
 
-        cy.get('.psv-gallery').compareScreenshots('scroll-pan');
+        screenshotGallery('scroll-pan');
     });
 
     it('should display fullscreen on mobile', VIEWPORT_MOBILE, () => {
@@ -62,7 +61,7 @@ describe('plugin: gallery', () => {
             expect({ x, y, width, height }).to.deep.eq({ x: 0, y: 0, width: 400, height: 760 });
         });
 
-        cy.get('.psv-gallery').compareScreenshots('mobile');
+        screenshotGallery('mobile');
 
         cy.get('.psv-gallery .psv-panel-close-button').click();
 
@@ -122,7 +121,7 @@ describe('plugin: gallery', () => {
 
         waitForAllThumbnails();
 
-        cy.get('.psv-gallery').compareScreenshots('set-thumbnailSize');
+        screenshotGallery('set-thumbnailSize');
     });
 
     it('should change the items', () => {
@@ -141,7 +140,7 @@ describe('plugin: gallery', () => {
             ]);
         });
 
-        cy.get('.psv-gallery').compareScreenshots('set-items');
+        screenshotGallery('set-items');
     });
 
     it('should throw if no "id" or "panorama"', () => {
@@ -208,5 +207,13 @@ describe('plugin: gallery', () => {
             'key-biscayne-6-thumb.jpg',
             'key-biscayne-7-thumb.jpg',
         );
+    }
+
+    function screenshotGallery(name: string) {
+        cy.get('.psv-gallery-container').invoke('css', 'overflow', 'hidden');
+
+        cy.get('.psv-gallery').compareScreenshots(name);
+
+        cy.get('.psv-gallery-container').invoke('css', 'overflow', '');
     }
 });
