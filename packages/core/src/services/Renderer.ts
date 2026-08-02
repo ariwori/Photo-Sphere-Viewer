@@ -292,12 +292,13 @@ export class Renderer extends AbstractService {
     }
 
     /**
-     * Applies a panorama data pose to a Mesh
+     * Applies a panorama data pose to a Mesh in compliance with GPano specification
+     * @link https://github.com/rodrigopolo/360GPanoReference
      * @internal
      */
     setPanoramaPose(panoData: PanoData, mesh: Object3D = this.mesh) {
         const cleanCorrection = this.viewer.dataHelper.cleanPanoramaPose(panoData);
-        mesh.rotation.set(-cleanCorrection.tilt, -cleanCorrection.pan, -cleanCorrection.roll, 'YXZ');
+        mesh.rotation.set(-cleanCorrection.tilt, -cleanCorrection.pan, cleanCorrection.roll, 'YXZ');
     }
 
     /**
