@@ -2,6 +2,7 @@ import type { AdapterConstructor, EquirectangularPanorama, PanoData, PanoramaPos
 import { AbstractAdapter, CONSTANTS, EquirectangularAdapter, events, utils } from '@photo-sphere-viewer/core';
 import { BufferAttribute, Group, Mesh, MeshBasicMaterial, SphereGeometry, Texture, Vector3 } from 'three';
 import { Queue, Task } from '../../shared/Queue';
+import { equirectToZxy, getPmtilesArchive } from '../../shared/pmtiles-utils';
 import { buildDebugTexture, buildErrorMaterial, createWireFrame } from '../../shared/tiles-utils';
 import {
     EquirectangularMultiTilesPanorama,
@@ -416,9 +417,10 @@ export class EquirectangularTilesAdapter extends AbstractAdapter<
                         tilesToLoad[id].angle = Math.min(tilesToLoad[id].angle, angle);
                         break;
                     } else {
-                        tile.url = panorama.tileUrl(col, row, config.level);
+                        // pmtiles archives are always read directly, tiles are considered loadable
+                        tile.url = panorama.tileUrl?.(col, row, config.level) ?? '';
 
-                        if (tile.url) {
+                        if (tile.url || panorama.pmtiles) {
                             tilesToLoad[id] = tile;
                             break;
                         } else {
@@ -458,19 +460,20 @@ export class EquirectangularTilesAdapter extends AbstractAdapter<
      * Loads and draw a tile
      */
     private __loadTile(tile: EquirectangularTile, task: Task): Promise<any> {
-        return this.viewer.textureLoader
-            .loadImage(tile.url, null, this.viewer.state.textureData.cacheKey)
+        return this.__getTileImage(tile, task)
             .then((image: HTMLImageElement) => {
-                if (!task.isCancelled()) {
-                    if (this.config.debug) {
-                        image = buildDebugTexture(image, tile.config.level, tileId(tile)) as any;
-                    }
-
-                    const mipmaps = this.config.antialias && tile.config.level > 0;
-                    const material = new MeshBasicMaterial({ map: utils.createTexture(image, mipmaps) });
-                    this.__swapMaterial(tile, material, false);
-                    this.viewer.needsUpdate();
+                if (!image || task.isCancelled()) {
+                    return;
                 }
+
+                if (this.config.debug) {
+                    image = buildDebugTexture(image, tile.config.level, tileId(tile)) as any;
+                }
+
+                const mipmaps = this.config.antialias && tile.config.level > 0;
+                const material = new MeshBasicMaterial({ map: utils.createTexture(image, mipmaps) });
+                this.__swapMaterial(tile, material, false);
+                this.viewer.needsUpdate();
             })
             .catch((err) => {
                 if (!utils.isAbortError(err) && !task.isCancelled() && this.config.showErrorTile) {
@@ -481,6 +484,29 @@ export class EquirectangularTilesAdapter extends AbstractAdapter<
                     this.viewer.needsUpdate();
                 }
             });
+    }
+
+    /**
+     * Loads a tile image, either from a PMTiles archive or from a regular URL
+     */
+    private __getTileImage(tile: EquirectangularTile, task: Task): Promise<HTMLImageElement | null> {
+        const panorama = this.viewer.config.panorama as EquirectangularTilesPanorama | EquirectangularMultiTilesPanorama;
+
+        if (panorama.pmtiles) {
+            const [z, x, y] = panorama.tileToZxy?.(tile.col, tile.row, tile.config.level)
+                ?? equirectToZxy(tile.col, tile.row, tile.config.cols);
+
+            const controller = new AbortController();
+            task.onAbort(() => controller.abort());
+
+            return getPmtilesArchive(panorama.pmtiles)
+                .getZxy(z, x, y, controller.signal)
+                .then((result) => {
+                    return result ? this.viewer.textureLoader.blobToImage(new Blob([result.data])) : null;
+                });
+        }
+
+        return this.viewer.textureLoader.loadImage(tile.url, null, this.viewer.state.textureData.cacheKey);
     }
 
     /**

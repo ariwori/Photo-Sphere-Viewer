@@ -54,7 +54,7 @@ ${
             }),
             dts: !dev,
             sourcemap: true,
-            external: ['three'],
+            external: ['three', 'pmtiles'],
             noExternal: [/three\/examples\/.*/],
             target: 'es2021',
             define: {

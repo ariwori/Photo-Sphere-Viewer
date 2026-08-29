@@ -28,6 +28,14 @@ export type EquirectangularTilesPanorama = {
      * function to build a tile url
      */
     tileUrl: (col: number, row: number) => string | null;
+    /**
+     * reads tiles from a PMTiles archive (URL requiring HTTP Range and CORS support, or local File)
+     */
+    pmtiles?: string | File;
+    /**
+     * converts tile coordinates to PMTiles z/x/y, only used with `pmtiles`
+     */
+    tileToZxy?: (col: number, row: number, level: number) => [number, number, number];
 };
 
 export type EquirectangularTileLevel = {
@@ -69,6 +77,14 @@ export type EquirectangularMultiTilesPanorama = {
      * function to build a tile url
      */
     tileUrl: (col: number, row: number, level: number) => string | null;
+    /**
+     * reads tiles from a PMTiles archive (URL requiring HTTP Range and CORS support, or local File)
+     */
+    pmtiles?: string | File;
+    /**
+     * converts tile coordinates to PMTiles z/x/y, only used with `pmtiles`
+     */
+    tileToZxy?: (col: number, row: number, level: number) => [number, number, number];
 };
 
 export type EquirectangularTilesAdapterConfig = Omit<EquirectangularAdapterConfig, 'shader'> & {

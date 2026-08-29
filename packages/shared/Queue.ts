@@ -16,6 +16,8 @@ const enum Status {
 export class Task {
     status: Status = Status.PENDING;
 
+    private readonly abortFns: Array<() => void> = [];
+
     constructor(
         public readonly id: string,
         public priority: number,
@@ -34,8 +36,16 @@ export class Task {
         );
     }
 
+    /**
+     * Registers a callback executed when the task is cancelled
+     */
+    onAbort(fn: () => void) {
+        this.abortFns.push(fn);
+    }
+
     cancel() {
         this.status = Status.CANCELLED;
+        this.abortFns.forEach(fn => fn());
     }
 
     isCancelled() {

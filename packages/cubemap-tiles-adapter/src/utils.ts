@@ -68,7 +68,7 @@ export function checkPanoramaConfig(
     panorama: CubemapTilesPanorama | CubemapMultiTilesPanorama,
     data: { CUBE_SEGMENTS: number },
 ) {
-    if (typeof panorama !== 'object' || !panorama.tileUrl) {
+    if (typeof panorama !== 'object' || (!panorama.tileUrl && !panorama.pmtiles)) {
         throw new PSVError('Invalid panorama configuration, are you using the right adapter?');
     }
     if (isMultiTiles(panorama)) {
@@ -110,6 +110,10 @@ export function getCacheKey(
     panorama: CubemapTilesPanorama | CubemapMultiTilesPanorama,
     firstTile: CubemapTileConfig,
 ): string {
+    if (panorama.pmtiles) {
+        return String(panorama.pmtiles);
+    }
+
     // some tiles might be "null"
     for (let i = 0; i < firstTile.nbTiles; i++) {
         const url = panorama.tileUrl('front', i, firstTile.nbTiles / 2, firstTile.level);

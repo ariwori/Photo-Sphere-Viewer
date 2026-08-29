@@ -21,6 +21,14 @@ export type CubemapTilesPanorama = {
      */
     tileUrl: (face: keyof Cubemap, col: number, row: number) => string | null;
     /**
+     * reads tiles from a PMTiles archive (URL requiring HTTP Range and CORS support, or local File)
+     */
+    pmtiles?: string | File;
+    /**
+     * converts tile coordinates to PMTiles z/x/y, only used with `pmtiles`
+     */
+    tileToZxy?: (face: keyof Cubemap, col: number, row: number, level: number) => [number, number, number];
+    /**
      * Set to true if the top and bottom faces are not correctly oriented
      * @default false
      */
@@ -58,6 +66,14 @@ export type CubemapMultiTilesPanorama = {
      * function to build a tile url
      */
     tileUrl: (face: keyof Cubemap, col: number, row: number, level: number) => string | null;
+    /**
+     * reads tiles from a PMTiles archive (URL requiring HTTP Range and CORS support, or local File)
+     */
+    pmtiles?: string | File;
+    /**
+     * converts tile coordinates to PMTiles z/x/y, only used with `pmtiles`
+     */
+    tileToZxy?: (face: keyof Cubemap, col: number, row: number, level: number) => [number, number, number];
     /**
      * Set to true if the top and bottom faces are not correctly oriented
      * @default false

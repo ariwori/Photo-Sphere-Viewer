@@ -76,7 +76,7 @@ export function checkPanoramaConfig(
     panorama: EquirectangularTilesPanorama | EquirectangularMultiTilesPanorama,
     data: { SPHERE_SEGMENTS: number; SPHERE_HORIZONTAL_SEGMENTS: number },
 ) {
-    if (typeof panorama !== 'object' || !panorama.tileUrl) {
+    if (typeof panorama !== 'object' || (!panorama.tileUrl && !panorama.pmtiles)) {
         throw new PSVError('Invalid panorama configuration, are you using the right adapter?');
     }
     if (isMultiTiles(panorama)) {
@@ -117,6 +117,10 @@ export function getCacheKey(
     panorama: EquirectangularTilesPanorama | EquirectangularMultiTilesPanorama,
     firstTile: EquirectangularTileConfig,
 ): string {
+    if (panorama.pmtiles) {
+        return String(panorama.pmtiles);
+    }
+
     // some tiles might be "null"
     for (let i = 0; i < firstTile.cols; i++) {
         const url = panorama.tileUrl(i, firstTile.rows / 2, firstTile.level);

@@ -7,7 +7,8 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "dependencies": {
-    "@photo-sphere-viewer/core": "0.0.0"
+    "@photo-sphere-viewer/core": "0.0.0",
+    "pmtiles": "^4.5.0"
   },
   "scripts": {
     "build": "tsup",

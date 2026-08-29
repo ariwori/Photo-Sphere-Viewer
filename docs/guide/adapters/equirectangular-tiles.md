@@ -105,6 +105,18 @@ Number of rows, must be power of two (2, 4, 8, 16, 32) and the maximum value is 
 Function used to build the URL of a tile.
 If the function returns `null` the corresponding tile will not be loaded.
 
+#### `pmtiles` (optional)
+
+-   type: `string | File`
+
+Instead of individual tiles URLs, tiles can be read directly from a [PMTiles](https://pmtiles.io) archive. A `string` is interpreted as the URL of the archive and requires HTTP Range and CORS support (S3, CloudFront, nginx...). A `File` is read locally.
+
+#### `tileToZxy` (optional)
+
+-   type: `function: (col, row, level) => [z, x, y]`
+
+Converts tile coordinates to PMTiles coordinates, only used with `pmtiles`. Defaults to `z = log2(cols)`, `x = col`, `y = row` (see [below](#reading-from-a-pmtiles-archive)).
+
 #### `baseUrl` (recommended)
 
 -   type: `string`
@@ -154,6 +166,18 @@ levels: [
 Function used to build the URL of a tile.
 If the function returns `null` the corresponding tile will not be loaded.
 
+#### `pmtiles` (optional)
+
+-   type: `string | File`
+
+Instead of individual tiles URLs, tiles can be read directly from a [PMTiles](https://pmtiles.io) archive. A `string` is interpreted as the URL of the archive and requires HTTP Range and CORS support (S3, CloudFront, nginx...). A `File` is read locally.
+
+#### `tileToZxy` (optional)
+
+-   type: `function: (col, row, level) => [z, x, y]`
+
+Converts tile coordinates to PMTiles coordinates, only used with `pmtiles`. Defaults to `z = log2(cols)`, `x = col`, `y = row` (see [below](#reading-from-a-pmtiles-archive)).
+
 #### `baseUrl` (recommended)
 
 -   type: `string`
@@ -169,6 +193,43 @@ Panorama configuration associated to low resolution first image, following the s
 :::
 
 ::::
+
+## Reading from a PMTiles archive
+
+All the tiles of the panorama (optionally multiple zoom levels) can be stored in a single [PMTiles](https://pmtiles.io) archive and read directly by the adapter, without any tile server.
+
+```js:line-numbers
+panorama: {
+    width: 12000,
+    cols: 16,
+    rows: 8,
+    baseUrl: 'panorama_low.jpg',
+    pmtiles: 'https://my-bucket.s3.amazonaws.com/panorama.pmtiles',
+},
+```
+
+The `pmtiles` option accepts an URL of the archive or a local `File`. Remote archives must be served with HTTP Range and CORS support, for example an S3 bucket configured with the following CORS rules:
+
+```json
+[
+    {
+        "AllowedOrigins": ["*"],
+        "AllowedMethods": ["GET"],
+        "AllowedHeaders": ["Range"],
+        "ExposeHeaders": ["Content-Range", "Accept-Ranges"]
+    }
+]
+```
+
+By default the PMTiles coordinates are deduced from the tiles configuration: `z = log2(cols)`, `x = col` and `y = row`, meaning the archive must have been built with the panorama split into a pyramid of `cols x rows` tiles, stored in the `x`/`y` range of the `2^z` square. The `tileToZxy` option allows to use any other layout, for example if the archive contains the tiles of a standard web map:
+
+```js:line-numbers
+tileToZxy: (col, row, level) => [level, col, row],
+```
+
+Tiles missing from the archive are silently skipped, keeping the previous level content, which is equivalent to the `tileUrl` function returning `null`.
+
+It is still recommended to provide a `baseUrl` to display a preview while the tiles are loading.
 
 ## Preparing the panorama
 

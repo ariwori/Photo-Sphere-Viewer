@@ -8,7 +8,8 @@
   "types": "./src/index.ts",
   "dependencies": {
     "@photo-sphere-viewer/core": "0.0.0",
-    "@photo-sphere-viewer/cubemap-adapter": "0.0.0"
+    "@photo-sphere-viewer/cubemap-adapter": "0.0.0",
+    "pmtiles": "^4.5.0"
   },
   "scripts": {
     "build": "tsup",
@@ -20,6 +21,6 @@
   },
   "psv": {
     "title": "Photo Sphere Viewer / Cubemap Tiles Adapter",
-    "budget": "20kb"
+    "budget": "25kb"
   }
 }
